@@ -60,9 +60,17 @@ homestats = findpitcher(homeids) # get a list of dictionaries
 awaystats = findpitcher(awayids)
 
 for i in range(len(homestats)): # update data in gamethatday
-    gamethatday[i]['teams']['home']['probablePitcher'].update(homestats[i])
-    gamethatday[i]['teams']['away']['probablePitcher'].update(awaystats[i]) # update global dict
-    
+    try:
+        gamethatday[i]['teams']['home']['probablePitcher'].update(homestats[i])
+    except:
+        # should add probablePitcher dict for home
+        gamethatday[i]['teams']['home']['probablePitcher'] = {'fullName' : 'TBD'}
+        # pass just now
+    try:
+        gamethatday[i]['teams']['away']['probablePitcher'].update(awaystats[i]) # update global dict
+    except:
+        gamethatday[i]['teams']['away']['probablePitcher'] = {'fullName' : 'TBD'}
+
     gamethatday[i]['teams']['home']['team_abbrev'] = teamAbbrev[gamethatday[i]['teams']['home']['team']['name']] # give a abbreviation name
     gamethatday[i]['teams']['away']['team_abbrev'] = teamAbbrev[gamethatday[i]['teams']['away']['team']['name']]
 

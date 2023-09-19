@@ -2,10 +2,12 @@
 {% block content%}
     {% for g in contests %}
         
-            <p> {{ g.teams.away.team_abbrev }} ({{ g.teams.away.leagueRecord.wins }}-{{ g.teams.away.leagueRecord.losses }}) @ {{ g.teams.home.team_abbrev }} ({{ g.teams.home.leagueRecord.wins }}-{{ g.teams.home.leagueRecord.losses }})
-                | {{ g.teams.away.probablePitcher.fullName }} vs {{ g.teams.home.probablePitcher.fullName }}
+        <p> {{ g.teams.away.team_abbrev }} ({{ g.teams.away.leagueRecord.wins }}-{{ g.teams.away.leagueRecord.losses }}) @ {{ g.teams.home.team_abbrev }} ({{ g.teams.home.leagueRecord.wins }}-{{ g.teams.home.leagueRecord.losses }})
+            | {{ g.teams.away.probablePitcher.fullName }} vs {{ g.teams.home.probablePitcher.fullName }}
 
-            </p>
-      
+        </p>
+        <p> Advanced Info Away -- </p>
+        <p> {{ g.teams.away.team.name }}: Win-Loss: {{ g.teams.away.leagueRecord.wins }}-{{ g.teams.away.leagueRecord.losses }} (0{{ g.teams.away.leagueRecord.pct }}), OPS </p>
+        <p> Probable Pitcher: {{ g.teams.away.probablePitcher.fullName }}, W-L: {{g.teams.away.probablePitcher.Win}}-{{g.teams.away.probablePitcher.Loss}}, IP: {{g.teams.away.probablePitcher.IP}}</p>
     {% endfor %}
 {% endblock content %}

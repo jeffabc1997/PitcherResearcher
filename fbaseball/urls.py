@@ -16,8 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from gameday import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('gameday/', include('gameday.urls'))
+    # path('gameday/', include('gameday.urls'))
+    path('', views.games, name="Gameday") # root path is direct to gameday
 ]
