@@ -1,0 +1,11 @@
+{% extends "gameday/base.html" %}
+{% block content%}
+    {% for g in contests %}
+        
+            <p> {{ g.teams.away.team_abbrev }} ({{ g.teams.away.leagueRecord.wins }}-{{ g.teams.away.leagueRecord.losses }}) @ {{ g.teams.home.team_abbrev }} ({{ g.teams.home.leagueRecord.wins }}-{{ g.teams.home.leagueRecord.losses }})
+                | {{ g.teams.away.probablePitcher.fullName }} vs {{ g.teams.home.probablePitcher.fullName }}
+
+            </p>
+      
+    {% endfor %}
+{% endblock content %}
