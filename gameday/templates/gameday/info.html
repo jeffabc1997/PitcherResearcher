@@ -6,8 +6,15 @@
             | {{ g.teams.away.probablePitcher.fullName }} vs {{ g.teams.home.probablePitcher.fullName }}
 
         </p>
-        <p> Advanced Info Away -- </p>
-        <p> {{ g.teams.away.team.name }}: Win-Loss: {{ g.teams.away.leagueRecord.wins }}-{{ g.teams.away.leagueRecord.losses }} (0{{ g.teams.away.leagueRecord.pct }}), OPS </p>
-        <p> Probable Pitcher: {{ g.teams.away.probablePitcher.fullName }}, W-L: {{g.teams.away.probablePitcher.Win}}-{{g.teams.away.probablePitcher.Loss}}, IP: {{g.teams.away.probablePitcher.IP}}</p>
+        <p> -- Advanced Information -- </p>
+        <p> Away Team: {{ g.teams.away.team.name }}</p>
+        <p> Win-Loss: {{ g.teams.away.leagueRecord.wins }}-{{ g.teams.away.leagueRecord.losses }} (0{{ g.teams.away.leagueRecord.pct }}), OPS </p>
+        <p> Probable Starting Pitcher: {{ g.teams.away.probablePitcher.fullName }}, W-L: {{g.teams.away.probablePitcher.Win}}-{{g.teams.away.probablePitcher.Loss}}, 
+            IP: {{g.teams.away.probablePitcher.IP}}, ERA: {{g.teams.away.probablePitcher.ERA}}, xERA: {{g.teams.away.probablePitcher.xERA}}, xFIP-: {{g.teams.away.probablePitcher.xFIPm}}</p>
+        <p> Home Team: {{ g.teams.home.team.name }}</p>
+        <p> Win-Loss: {{ g.teams.home.leagueRecord.wins }}-{{ g.teams.home.leagueRecord.losses }} (0{{ g.teams.home.leagueRecord.pct }}), OPS </p>
+        <p> Probable Starting Pitcher: {{ g.teams.home.probablePitcher.fullName }}, W-L: {{g.teams.home.probablePitcher.Win}}-{{g.teams.home.probablePitcher.Loss}}, 
+            IP: {{g.teams.home.probablePitcher.IP}}, ERA: {{g.teams.home.probablePitcher.ERA}}, xERA: {{g.teams.home.probablePitcher.xERA}}, xFIP-: {{g.teams.home.probablePitcher.xFIPm}}</p>
+        
     {% endfor %}
 {% endblock content %}
