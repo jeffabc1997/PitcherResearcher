@@ -15,8 +15,10 @@ teamtoFgId = {'Arizona Diamondbacks': 15, 'Atlanta Braves': 16, 'Baltimore Oriol
               'New York Yankees': 9, 'Oakland Athletics': 10, 'Philadelphia Phillies': 26, 'Pittsburgh Pirates': 27, 'San Diego Padres': 29, 'Seattle Mariners': 11, \
               'San Francisco Giants': 30, 'St. Louis Cardinals': 28, 'Tampa Bay Rays': 12, 'Texas Rangers': 13, 'Toronto Blue Jays': 14, 'Washington Nationals': 24}
 
-allPitcherStats = pybaseball.pitching_stats(2023, qual = 1)
-allTeamBatStats = pybaseball.team_batting(2023, 2023, ind=0).dropna(axis=1)
+thisYear = 2023
+baseballRefPitcher = pybaseball.pitching_stats_bref(2023)
+allPitcherStats = pybaseball.pitching_stats(thisYear, qual = 1)
+allTeamBatStats = pybaseball.team_batting(thisYear, thisYear, ind=0)
 def findpitcher(mlbids):
     statlist = []
     global allPitcherStats
@@ -24,6 +26,14 @@ def findpitcher(mlbids):
     # put only 1 player in this function for the right order
     for mid in mlbids:
         key = pybaseball.playerid_reverse_lookup([mid], key_type='mlbam')
+        statDict = {}
+        brefPlayer = baseballRefPitcher.loc[baseballRefPitcher['mlbID'] == mid].to_dict('record')[0]
+        statDict['Win'] = int(brefPlayer['W'])
+        statDict['Loss'] = int(brefPlayer['L'])
+        statDict['IP'] = brefPlayer['IP']
+        statDict['ERA'] = brefPlayer['ERA']
+        statDict['WHIP'] = brefPlayer['WHIP']
+        statDict['SO9'] = brefPlayer['SO9']
         try:
             fgid = key['key_fangraphs'].values[0] # fangraphs ID
         except:
@@ -31,6 +41,7 @@ def findpitcher(mlbids):
             statlist.append({})
             continue
         aPlayer = allPitcherStats.loc[allPitcherStats['IDfg'] == fgid]
+        
         if aPlayer.empty:
             print(f"fgID: {fgid}, not a qualified pitcher.")
             statlist.append({})
@@ -43,8 +54,8 @@ def findpitcher(mlbids):
     return statlist
 def findTeamStats(name):
     global allTeamBatStats, teamtoFgId
-    battingOfTeam = allTeamBatStats.loc[allTeamBatStats['teamIDfg'] == teamtoFgId[name], ["wRC+", "Hard%+", "wOBA"]]
-    print(battingOfTeam)
+    battingOfTeam = allTeamBatStats.loc[allTeamBatStats['teamIDfg'] == teamtoFgId[name], ["OPS", "wOBA", "wRC+"]]
+    battingOfTeam = battingOfTeam.rename(columns={'wRC+': 'wRCp'}) # html can't parse '+'
     return battingOfTeam.to_dict('records')[0]
 # getting the year from the current date and time
 current_datetime = datetime.now(timezone.utc) - timedelta(hours=8) # Time zone: western time in US
@@ -93,4 +104,4 @@ for i in range(len(homePitcherStats)): # update data in gamethatday
 
     gamethatday[i]['teams']['home'].update(findTeamStats(gamethatday[i]['teams']['home']['team']['name'])) # update the team's batting stats
     gamethatday[i]['teams']['away'].update(findTeamStats(gamethatday[i]['teams']['away']['team']['name']))
-print(gamethatday)
+# print(gamethatday)
