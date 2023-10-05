@@ -1,0 +1,67 @@
+/* styles.css */
+
+table {
+    width: 70%;
+    border-collapse: collapse;
+    
+    table-layout: fixed;
+}
+.table-type-Away {
+
+    border: 2px solid #007bff;
+}
+
+.table-type-Away th {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #007bff;
+    white-space: nowrap; /* Prevent text from wrapping within cells */
+    background-color: #007bff;
+    color: white;
+    width: 50px;
+}
+
+.table-type-Away td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #007bff;
+    white-space: nowrap; /* Prevent text from wrapping within cells */
+    width: 50px;
+}
+
+.table-type-Home {
+    
+    border-collapse: collapse;
+    border: 2px solid #52D1A2;
+    table-layout: fixed; /* Set the table layout to fixed */
+}
+
+.table-type-Home th {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #52D1A2;
+    white-space: nowrap; /* Prevent text from wrapping within cells */
+    background-color: #52D1A2;
+    color: white;
+}
+
+.table-type-Home td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #52D1A2;
+    white-space: nowrap; /* Prevent text from wrapping within cells */
+
+}
+
+.col1 {
+    width: 100px; /* Adjust the width as needed */
+}
+/* Add specific styles for the first and second rows as needed */
+.header-cell {
+    font-weight: bold;
+}
+
+.data-cell {
+    /* Add specific styles for data cells */
+}
+
