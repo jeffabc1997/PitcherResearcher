@@ -77,10 +77,10 @@ def mlbgame():
         "date": date,
         "hydrate": "probablePitcher(note)",
     }
-    schedule = statsapi.get("schedule", params)
+    schedule = statsapi.get("schedule", params) # Future Progress: can update schedule for probable pitcher without process termination
     if schedule['totalGames'] == 0:
         return {}
-    gamethatday = schedule["dates"][0]["games"]
+    gamethatday = schedule["dates"][0]["games"] 
     homeids = []
     awayids =[]
 
@@ -119,4 +119,5 @@ def mlbgame():
         gamethatday[i]['teams']['home'].update(findTeamStats(gamethatday[i]['teams']['home']['team']['name'])) # update the team's batting stats
         gamethatday[i]['teams']['away'].update(findTeamStats(gamethatday[i]['teams']['away']['team']['name']))
     # print(gamethatday)
+    print("test view")
     return gamethatday
