@@ -69,7 +69,7 @@ def findTeamStats(name):
     return battingdict
 # getting the year from the current date and time
 def mlbgame():
-    current_datetime = datetime.now(timezone.utc) - timedelta(hours=8) # Time zone: western time in US
+    current_datetime = datetime.now() # Time zone: western time in US
     date = current_datetime.strftime("%m/%d/%Y")
     # date = "09/30/2023"
     params = {
@@ -118,6 +118,6 @@ def mlbgame():
 
         gamethatday[i]['teams']['home'].update(findTeamStats(gamethatday[i]['teams']['home']['team']['name'])) # update the team's batting stats
         gamethatday[i]['teams']['away'].update(findTeamStats(gamethatday[i]['teams']['away']['team']['name']))
-    # print(gamethatday)
-    print("test view")
+    print("in getdata: ",gamethatday)
+    # print("test view")
     return gamethatday

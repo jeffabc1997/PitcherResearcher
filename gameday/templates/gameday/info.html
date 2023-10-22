@@ -2,7 +2,7 @@
 {% block content%}
     {% for g in contests %}
         
-        <h3> {{ g.teams.away.team_abbrev }} ({{ g.teams.away.leagueRecord.wins }}-{{ g.teams.away.leagueRecord.losses }}) @ {{ g.teams.home.team_abbrev }} ({{ g.teams.home.leagueRecord.wins }}-{{ g.teams.home.leagueRecord.losses }})
+        <h3> {{ g.teams.away.team_abbrev }} ({{ g.teams.away.leagueRecord.wins }}-{{ g.teams.away.leagueRecord.losses }}) {{g.teams.away.score}} @ {{g.teams.home.score}} {{ g.teams.home.team_abbrev }} ({{ g.teams.home.leagueRecord.wins }}-{{ g.teams.home.leagueRecord.losses }})
             | {{ g.teams.away.probablePitcher.fullName }} vs {{ g.teams.home.probablePitcher.fullName }}
         </h3>
         
