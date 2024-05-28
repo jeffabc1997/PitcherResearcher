@@ -1,0 +1,8 @@
+services:
+  app: 
+    build: .
+    container_name: baseball-api
+    command: python3 manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8001:8000
+    
