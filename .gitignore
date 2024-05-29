@@ -1,3 +1,5 @@
 .DS_Store
 venvFile/
 .vscode/
+db.sqlite3
+/gameday/migrations
