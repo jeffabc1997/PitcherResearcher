@@ -78,6 +78,7 @@ def mlbgame():
         )
     current_datetime = datetime.now() # Time zone: western time in US
     date = current_datetime.strftime("%m/%d/%Y")
+    
     # date = "09/30/2023"
     params = {
         "sportId": 1,
@@ -86,44 +87,56 @@ def mlbgame():
     }
     schedule = statsapi.get("schedule", params) # Future Progress: can update schedule for probable pitcher without process termination
     if schedule['totalGames'] == 0:
-        return {}
+        return
+        # return {}
     gamethatday = schedule["dates"][0]["games"]
     # print(gamethatday)
-    homeids = []
-    awayids =[]
+    # homeids = []
+    # awayids =[]
 
-    for g in gamethatday: # get starting pitcher ID
-        try:
-            homeids.append(g['teams']['home']['probablePitcher']['id'])
-            # print(g['teams']['home']['probablePitcher']['id'], g['teams']['home']['probablePitcher']['fullName'])
-        except:
-            print("home probablePitcher Key not found")
-            homeids.append(-1)
-        try:
-            awayids.append(g['teams']['away']['probablePitcher']['id'])
-            # print(g['teams']['away']['probablePitcher']['id'], g['teams']['away']['probablePitcher']['fullName'])
-        except:
-            print("away probablePitcher Key not found")
-            awayids.append(-1)
+    existed_games = Game.objects.filter(game_date=current_datetime.strftime("%Y-%m-%d"))
+    pitcher_updated = True
+    for ex in existed_games:
+        if ex.away_pitcher_id.id == -1 or ex.home_pitcher_id.id == -1:
+            pitcher_updated = False
+            break
+    if pitcher_updated: # we don't need to update the game data
+        return
+    
+    # for g in gamethatday: # get starting pitcher ID
+    #     try:
+    #         homeids.append(g['teams']['home']['probablePitcher']['id'])
+    #         # print(g['teams']['home']['probablePitcher']['id'], g['teams']['home']['probablePitcher']['fullName'])
+    #     except:
+    #         print("home probablePitcher Key not found")
+    #         homeids.append(-1)
+    #     try:
+    #         awayids.append(g['teams']['away']['probablePitcher']['id'])
+    #         # print(g['teams']['away']['probablePitcher']['id'], g['teams']['away']['probablePitcher']['fullName'])
+    #     except:
+    #         print("away probablePitcher Key not found")
+    #         awayids.append(-1)
 
     # homePitcherStats = findpitcher(homeids) # get a list of dictionaries
     # awayPitcherStats = findpitcher(awayids)
-
+    home_pitcher_dic = {}
+    away_pitcher_dic = {}
     for i in range(len(gamethatday)): # update data in gamethatday
         try:
-            home_pitcher_dic = findpitcher(gamethatday[i]['teams']['home']['probablePitcher']['id'])
-            home_pitcher_dic['id'] = gamethatday[i]['teams']['home']['probablePitcher']['id']
+            home_pitcher_dic.update(findpitcher(gamethatday[i]['teams']['home']['probablePitcher']['id']))
+            home_pitcher_dic['id'] = gamethatday[i]['teams']['home']['probablePitcher']['id'] # MLB ID
             home_pitcher_dic['fullName'] = gamethatday[i]['teams']['home']['probablePitcher']['fullName']
-            print('home pitcher', home_pitcher_dic)
+            # print('home pitcher', home_pitcher_dic)
             gamethatday[i]['teams']['home']['probablePitcher'].update(home_pitcher_dic)
         except:
             # if can't find a pitcher, give it TBD
             gamethatday[i]['teams']['home']['probablePitcher'] = {'fullName' : 'TBD'} # STILL NEED TO CHECK
             home_pitcher_dic['id'] = -1
             home_pitcher_dic['fullName'] = 'TBD'
+            print('home pitcher not found', home_pitcher_dic)
         try:
             
-            away_pitcher_dic = findpitcher(gamethatday[i]['teams']['away']['probablePitcher']['id'])
+            away_pitcher_dic.update(findpitcher(gamethatday[i]['teams']['away']['probablePitcher']['id']))
             away_pitcher_dic['id'] = gamethatday[i]['teams']['away']['probablePitcher']['id']
             away_pitcher_dic['fullName'] = gamethatday[i]['teams']['away']['probablePitcher']['fullName']
             gamethatday[i]['teams']['away']['probablePitcher'].update(away_pitcher_dic) # update global dict
@@ -131,6 +144,7 @@ def mlbgame():
             gamethatday[i]['teams']['away']['probablePitcher'] = {'fullName' : 'TBD'} 
             away_pitcher_dic['id'] = -1
             away_pitcher_dic['fullName'] = 'TBD'
+            print('away pitcher not found', away_pitcher_dic)
         home_team_dic = {'team_abbrev': teamAbbrev[gamethatday[i]['teams']['home']['team']['name']], 'team_id': gamethatday[i]['teams']['home']['team']['id'], 
                          'team_name': gamethatday[i]['teams']['home']['team']['name'], 'win': gamethatday[i]['teams']['home']['leagueRecord']['wins'], 
                          'loss': gamethatday[i]['teams']['home']['leagueRecord']['losses'], 'win_pct': gamethatday[i]['teams']['home']['leagueRecord']['pct']}
@@ -138,7 +152,7 @@ def mlbgame():
                          'team_name': gamethatday[i]['teams']['away']['team']['name'], 'win': gamethatday[i]['teams']['away']['leagueRecord']['wins'],
                          'loss': gamethatday[i]['teams']['away']['leagueRecord']['losses'], 'win_pct': gamethatday[i]['teams']['away']['leagueRecord']['pct']}
         try:
-            home_team_dic['score'] = gamethatday[i]['teams']['home']['score']
+            home_team_dic['score'] = gamethatday[i]['teams']['home']['score'] # if the game doesn't start, there is no score
         except:
             home_team_dic['score'] = 0
         try:
@@ -147,16 +161,16 @@ def mlbgame():
             away_team_dic['score'] = 0
         home_team_dic.update(findTeamStats(home_team_dic['team_name'])) # update the team's batting stats
         away_team_dic.update(findTeamStats(away_team_dic['team_name']))
-        print('home team dic', home_team_dic)
-        print('away team dic', away_team_dic)
-        print('home pitcher dic', home_pitcher_dic)
-        print('away pitcher dic', away_pitcher_dic)
+        # print('home team dic', home_team_dic)
+        # print('away team dic', away_team_dic)
+        # print('home pitcher dic', home_pitcher_dic)
+        # print('away pitcher dic', away_pitcher_dic)
 
-        gamethatday[i]['teams']['home']['team_abbrev'] = teamAbbrev[gamethatday[i]['teams']['home']['team']['name']] # give a abbreviation name
-        gamethatday[i]['teams']['away']['team_abbrev'] = teamAbbrev[gamethatday[i]['teams']['away']['team']['name']]
+        # gamethatday[i]['teams']['home']['team_abbrev'] = teamAbbrev[gamethatday[i]['teams']['home']['team']['name']] # give a abbreviation name
+        # gamethatday[i]['teams']['away']['team_abbrev'] = teamAbbrev[gamethatday[i]['teams']['away']['team']['name']]
 
-        gamethatday[i]['teams']['home'].update(findTeamStats(gamethatday[i]['teams']['home']['team']['name'])) # update the team's batting stats
-        gamethatday[i]['teams']['away'].update(findTeamStats(gamethatday[i]['teams']['away']['team']['name']))
+        # gamethatday[i]['teams']['home'].update(findTeamStats(gamethatday[i]['teams']['home']['team']['name'])) # update the team's batting stats
+        # gamethatday[i]['teams']['away'].update(findTeamStats(gamethatday[i]['teams']['away']['team']['name']))
 
         # if(gamethatday[i]['teams']['away']['probablePitcher']['fullName'] == 'TBD'):
         #     gamethatday[i]['teams']['home']['probablePitcher']['id'] = -1
@@ -169,12 +183,12 @@ def mlbgame():
                 id=home_pitcher_dic['id'],
                 defaults={
                     'fullName': home_pitcher_dic['fullName'],'IP': home_pitcher_dic['IP'],
-                    'Win': home_pitcher_dic['Win'], 'Loss': home_pitcher_dic['Loss'], #'ERA': home_pitcher_dic['ERA'],
-                    # 'xERA': home_pitcher_dic['xERA'], 'xFIPm': home_pitcher_dic['xFIPm']
+                    'Win': home_pitcher_dic['Win'], 'Loss': home_pitcher_dic['Loss'], 'ERA': home_pitcher_dic['ERA'],
+                    'xERA': home_pitcher_dic['xERA'], 'xFIPm': home_pitcher_dic['xFIPm']
                 }
             )
         except:
-            print('home not created',obj_home_pitcher)
+            print('home pitcher not created',home_pitcher_dic)
         # if created:
         #     print(f'Created new record: {obj_home_pitcher}')
         # else:
@@ -188,7 +202,7 @@ def mlbgame():
                 }
             )
         except:
-            print('away not created', away_pitcher_dic)
+            print('away pitcher not created', away_pitcher_dic)
         # if created:
         #     print(f'Created new record: {obj_away_pitcher}')
         # else:
@@ -207,6 +221,10 @@ def mlbgame():
                 'OPS': home_team_dic['OPS'], 'wOBA': home_team_dic['wOBA'], 'wRCp': home_team_dic['wRCp']
             }
         )
+        if home_pitcher_dic['id'] == -1:
+            obj_home_pitcher = obj_tbd
+        if away_pitcher_dic['id'] == -1:
+            obj_away_pitcher = obj_tbd
         obj_game, created = Game.objects.update_or_create(
             game_id=gamethatday[i]['gamePk'],
             defaults={'game_date': gamethatday[i]['officialDate'],
@@ -222,4 +240,4 @@ def mlbgame():
         #     print(f'Updated existing record: {obj}')
     # print("in getdata: ",gamethatday)
     # print("test view")
-    return gamethatday
+    # return gamethatday

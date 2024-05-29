@@ -30,7 +30,7 @@ class Pitcher(models.Model):
     # hardhit_pct = models.DecimalField(default=0, decimal_places=3)
     # barrel_pct = models.DecimalField(default=0, decimal_places=3)
     def __str__(self):
-        return str(self.id) + " " + self.name
+        return str(self.id) + " " + self.fullName
 class Game(models.Model):
 
     game_id = models.IntegerField(primary_key=True) # PK
