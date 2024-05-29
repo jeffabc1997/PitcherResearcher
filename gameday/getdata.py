@@ -21,7 +21,6 @@ baseballRefPitcher = pybaseball.pitching_stats_bref(thisYear)
 allPitcherStats = pybaseball.pitching_stats(thisYear, qual = 1)
 allTeamBatStats = pybaseball.team_batting(thisYear, thisYear, ind=0)
 def findpitcher(mlbid):
-    # statlist = []
     global allPitcherStats, baseballRefPitcher
     # df = pybaseball.pitching_stats(2023, qual = 1) # all pitching stats
     # put only 1 player in this function for the right order
@@ -52,14 +51,9 @@ def findpitcher(mlbid):
         statDict['xERA'] = round(aPlayer['xERA'], 2)
     except:
         print(f"MLB ID:{mlbid} not found in Fangraph API.")
-        
-
-        # customize the information we want to display on webpage
-        # statlist.append({'Win': aPlayer['W'].values[0], 'Loss': aPlayer['L'].values[0], \
-        #                      'IP': aPlayer['IP'].values[0], 'ERA': aPlayer['ERA'].values[0], \
-        #                      'xFIPm': aPlayer['xFIP-'].values[0], 'xERA': aPlayer['xERA'].values[0]}) 
 
     return statDict
+
 def findTeamStats(name):
     global allTeamBatStats, teamtoFgId
     battingOfTeam = allTeamBatStats.loc[allTeamBatStats['teamIDfg'] == teamtoFgId[name], ["OPS", "wOBA", "wRC+"]]
@@ -71,10 +65,7 @@ def findTeamStats(name):
 # getting the year from the current date and time
 def mlbgame():
     obj_tbd, created = Pitcher.objects.update_or_create(
-            id=-1,
-            defaults={
-                'fullName': 'TBD',
-            }
+            id=-1, defaults={'fullName': 'TBD',}
         )
     current_datetime = datetime.now() # Time zone: western time in US
     date = current_datetime.strftime("%m/%d/%Y")
@@ -91,8 +82,6 @@ def mlbgame():
         # return {}
     gamethatday = schedule["dates"][0]["games"]
     # print(gamethatday)
-    # homeids = []
-    # awayids =[]
 
     existed_games = Game.objects.filter(game_date=current_datetime.strftime("%Y-%m-%d"))
     pitcher_updated = True
@@ -103,23 +92,7 @@ def mlbgame():
     if pitcher_updated: # we don't need to update the game data
         return
     
-    # for g in gamethatday: # get starting pitcher ID
-    #     try:
-    #         homeids.append(g['teams']['home']['probablePitcher']['id'])
-    #         # print(g['teams']['home']['probablePitcher']['id'], g['teams']['home']['probablePitcher']['fullName'])
-    #     except:
-    #         print("home probablePitcher Key not found")
-    #         homeids.append(-1)
-    #     try:
-    #         awayids.append(g['teams']['away']['probablePitcher']['id'])
-    #         # print(g['teams']['away']['probablePitcher']['id'], g['teams']['away']['probablePitcher']['fullName'])
-    #     except:
-    #         print("away probablePitcher Key not found")
-    #         awayids.append(-1)
-
-    # homePitcherStats = findpitcher(homeids) # get a list of dictionaries
-    # awayPitcherStats = findpitcher(awayids)
-    home_pitcher_dic = {}
+    home_pitcher_dic = {} # replace gamethatday with information we need from the API
     away_pitcher_dic = {}
     for i in range(len(gamethatday)): # update data in gamethatday
         try:
@@ -127,21 +100,19 @@ def mlbgame():
             home_pitcher_dic['id'] = gamethatday[i]['teams']['home']['probablePitcher']['id'] # MLB ID
             home_pitcher_dic['fullName'] = gamethatday[i]['teams']['home']['probablePitcher']['fullName']
             # print('home pitcher', home_pitcher_dic)
-            gamethatday[i]['teams']['home']['probablePitcher'].update(home_pitcher_dic)
+
         except:
             # if can't find a pitcher, give it TBD
-            gamethatday[i]['teams']['home']['probablePitcher'] = {'fullName' : 'TBD'} # STILL NEED TO CHECK
             home_pitcher_dic['id'] = -1
             home_pitcher_dic['fullName'] = 'TBD'
             print('home pitcher not found', home_pitcher_dic)
+
         try:
-            
             away_pitcher_dic.update(findpitcher(gamethatday[i]['teams']['away']['probablePitcher']['id']))
             away_pitcher_dic['id'] = gamethatday[i]['teams']['away']['probablePitcher']['id']
             away_pitcher_dic['fullName'] = gamethatday[i]['teams']['away']['probablePitcher']['fullName']
-            gamethatday[i]['teams']['away']['probablePitcher'].update(away_pitcher_dic) # update global dict
+
         except:
-            gamethatday[i]['teams']['away']['probablePitcher'] = {'fullName' : 'TBD'} 
             away_pitcher_dic['id'] = -1
             away_pitcher_dic['fullName'] = 'TBD'
             print('away pitcher not found', away_pitcher_dic)
@@ -151,6 +122,7 @@ def mlbgame():
         away_team_dic = {'team_abbrev': teamAbbrev[gamethatday[i]['teams']['away']['team']['name']], 'team_id': gamethatday[i]['teams']['away']['team']['id'], 
                          'team_name': gamethatday[i]['teams']['away']['team']['name'], 'win': gamethatday[i]['teams']['away']['leagueRecord']['wins'],
                          'loss': gamethatday[i]['teams']['away']['leagueRecord']['losses'], 'win_pct': gamethatday[i]['teams']['away']['leagueRecord']['pct']}
+        
         try:
             home_team_dic['score'] = gamethatday[i]['teams']['home']['score'] # if the game doesn't start, there is no score
         except:
@@ -159,25 +131,10 @@ def mlbgame():
             away_team_dic['score'] = gamethatday[i]['teams']['away']['score']
         except:
             away_team_dic['score'] = 0
+
         home_team_dic.update(findTeamStats(home_team_dic['team_name'])) # update the team's batting stats
         away_team_dic.update(findTeamStats(away_team_dic['team_name']))
-        # print('home team dic', home_team_dic)
-        # print('away team dic', away_team_dic)
-        # print('home pitcher dic', home_pitcher_dic)
-        # print('away pitcher dic', away_pitcher_dic)
 
-        # gamethatday[i]['teams']['home']['team_abbrev'] = teamAbbrev[gamethatday[i]['teams']['home']['team']['name']] # give a abbreviation name
-        # gamethatday[i]['teams']['away']['team_abbrev'] = teamAbbrev[gamethatday[i]['teams']['away']['team']['name']]
-
-        # gamethatday[i]['teams']['home'].update(findTeamStats(gamethatday[i]['teams']['home']['team']['name'])) # update the team's batting stats
-        # gamethatday[i]['teams']['away'].update(findTeamStats(gamethatday[i]['teams']['away']['team']['name']))
-
-        # if(gamethatday[i]['teams']['away']['probablePitcher']['fullName'] == 'TBD'):
-        #     gamethatday[i]['teams']['home']['probablePitcher']['id'] = -1
-        # h_pitcher_id = gamethatday[i]['teams']['home']['probablePitcher']['id'] if gamethatday[i]['teams']['home']['probablePitcher']['fullName'] != 'TBD' else -1
-        # a_pitcher_id = gamethatday[i]['teams']['away']['probablePitcher']['id'] if gamethatday[i]['teams']['away']['probablePitcher']['fullName'] != 'TBD' else -1
-        # if(gamethatday[i]['teams']['home']['probablePitcher']['fullName'] == 'TBD'):
-        #     gamethatday[i]['teams']['away']['probablePitcher']['id'] = -1
         try:
             obj_home_pitcher, created = Pitcher.objects.update_or_create(
                 id=home_pitcher_dic['id'],
