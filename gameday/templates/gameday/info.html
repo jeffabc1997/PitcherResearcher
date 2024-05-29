@@ -2,16 +2,17 @@
 {% block content%}
     {% for g in contests %}
         
-        <h3> {{ g.teams.away.team_abbrev }} ({{ g.teams.away.leagueRecord.wins }}-{{ g.teams.away.leagueRecord.losses }}) @ {{ g.teams.home.team_abbrev }} ({{ g.teams.home.leagueRecord.wins }}-{{ g.teams.home.leagueRecord.losses }})
-            | {{ g.teams.away.probablePitcher.fullName }} vs {{ g.teams.home.probablePitcher.fullName }}
+        <h3> {{ g.away_team_id.team_abbrev }} ({{ g.away_team_id.wins }}-{{ g.away_team_id.losses }}) {{g.away_team_score}} @ {{g.home_team_score}} {{ g.home_team_id.team_abbrev }} ({{ g.home_team_id.wins }}-{{ g.home_team_id.losses }})
+            | {{ g.away_pitcher_id.fullName }} vs {{ g.home_pitcher_id.fullName }}
         </h3>
-        
+    
           <!-- Button code here -->
-        <button id="showButton{{g.gamePk}}" class="icon-button"><i class="fas fa-play"></i> Advanced Stats</button>
-        <div id="info{{g.gamePk}}" style="display:none">
+        <button id="showButton{{g.game_id}}" class="icon-button"><i class="fas fa-play"></i> Advanced Stats</button>
+        <div id="info{{g.game_id}}" style="display:none">
             <p></p>
+            
             <table class="table-type-Away">
-                <tr>
+                <tr> 
                     <!-- Away Team -->
                     <th>Away Team</th>
                     <th>Win-Loss</th>
@@ -23,12 +24,12 @@
     
                 <tr>
                     <!-- Display values in the second row -->
-                    <td>{{g.teams.away.team.name}}</td>
-                    <td>{{ g.teams.away.leagueRecord.wins }}-{{ g.teams.away.leagueRecord.losses }}</td>
-                    <td>{{ g.teams.away.leagueRecord.pct }}</td>
-                    <td>{{ g.teams.away.OPS }}</td>
-                    <td>{{ g.teams.away.wOBA }}</td>
-                    <td>{{ g.teams.away.wRCp }}</td>
+                    <td>{{g.away_team_id.name}}</td>
+                    <td>{{ g.away_team_id.wins }}-{{ g.away_team_id.losses }}</td>
+                    <td>{{ g.away_team_id.pct }}</td>
+                    <td>{{ g.away_team_id.OPS }}</td>
+                    <td>{{ g.away_team_id.wOBA }}</td>
+                    <td>{{ g.away_team_id.wRCp }}</td>
                     
                 </tr>
             </table>
@@ -47,12 +48,12 @@
                 <tr>
                     <!-- Display values in the second row -->
                     <!-- <td>{{g.teams.away.team_abbrev}}</td> -->
-                    <td>{{g.teams.away.probablePitcher.fullName}}</td>
-                    <td>{{g.teams.away.probablePitcher.Win}}-{{g.teams.away.probablePitcher.Loss}}</td>
-                    <td>{{g.teams.away.probablePitcher.IP}}</td>
-                    <td>{{g.teams.away.probablePitcher.ERA}}</td>
-                    <td>{{g.teams.away.probablePitcher.xERA}}</td>
-                    <td>{{g.teams.away.probablePitcher.xFIPm}}</td>
+                    <td>{{g.away_pitcher_id.fullName}}</td>
+                    <td>{{g.away_pitcher_id.Win}}-{{g.away_pitcher_id.Loss}}</td>
+                    <td>{{g.away_pitcher_id.IP}}</td>
+                    <td>{{g.away_pitcher_id.ERA}}</td>
+                    <td>{{g.away_pitcher_id.xERA}}</td>
+                    <td>{{g.away_pitcher_id.xFIPm}}</td>
                 </tr>
             </table>
             <p> </p>
@@ -69,12 +70,12 @@
     
                 <tr>
                     <!-- Display values in the second row -->
-                    <td>{{g.teams.home.team.name}}</td>
-                    <td>{{ g.teams.home.leagueRecord.wins }}-{{ g.teams.home.leagueRecord.losses }}</td>
-                    <td>{{g.teams.home.leagueRecord.pct }}</td>
-                    <td>{{ g.teams.home.OPS }}</td>
-                    <td>{{ g.teams.home.wOBA }}</td>
-                    <td>{{ g.teams.home.wRCp }}</td>
+                    <td>{{g.home_team_id.name}}</td>
+                    <td>{{ g.home_team_id.wins }}-{{ g.home_team_id.losses }}</td>
+                    <td>{{g.home_team_id.pct }}</td>
+                    <td>{{ g.home_team_id.OPS }}</td>
+                    <td>{{ g.home_team_id.wOBA }}</td>
+                    <td>{{ g.home_team_id.wRCp }}</td>
                     
                 </tr>
             </table>
@@ -93,14 +94,15 @@
                 <tr>
                     <!-- Display values in the second row -->
                     <!--<td>{{g.teams.home.team_abbrev}}</td>-->
-                    <td>{{g.teams.home.probablePitcher.fullName}}</td>
-                    <td>{{g.teams.home.probablePitcher.Win}}-{{g.teams.home.probablePitcher.Loss}}</td>
-                    <td>{{g.teams.home.probablePitcher.IP}}</td>
-                    <td>{{g.teams.home.probablePitcher.ERA}}</td>
-                    <td>{{g.teams.home.probablePitcher.xERA}}</td>
-                    <td>{{g.teams.home.probablePitcher.xFIPm}}</td>
+                    <td>{{g.home_pitcher_id.fullName}}</td>
+                    <td>{{g.home_pitcher_id.Win}}-{{g.home_pitcher_id.Loss}}</td>
+                    <td>{{g.home_pitcher_id.IP}}</td>
+                    <td>{{g.home_pitcher_id.ERA}}</td>
+                    <td>{{g.home_pitcher_id.xERA}}</td>
+                    <td>{{g.home_pitcher_id.xFIPm}}</td>
                 </tr>
             </table>
+            
           <!-- <p> -- Advanced Information -- </p>
             <p> Away Team: {{ g.teams.away.team.name }}</p>
            <p> Win-Loss: {{ g.teams.away.leagueRecord.wins }}-{{ g.teams.away.leagueRecord.losses }} (0{{ g.teams.away.leagueRecord.pct }}), OPS: {{ g.teams.away.OPS }}, wOBA: {{g.teams.away.wOBA}}, wRC+: {{g.teams.away.wRCp}} </p>
@@ -115,8 +117,8 @@
 
         <script>
             // JavaScript code to handle button click
-            document.getElementById("showButton{{g.gamePk}}").addEventListener("click", function() {
-                toggleInfo("info{{g.gamePk}}");
+            document.getElementById("showButton{{g.game_id}}").addEventListener("click", function() {
+                toggleInfo("info{{g.game_id}}");
             });
             function toggleInfo(infoId) {
             var infoDiv = document.getElementById(infoId);
