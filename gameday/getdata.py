@@ -79,14 +79,14 @@ def mlbgame():
     schedule = statsapi.get("schedule", params) # Future Progress: can update schedule for probable pitcher without process termination
     if schedule['totalGames'] == 0:
         return
-        # return {}
+
     gamethatday = schedule["dates"][0]["games"]
     # print(gamethatday)
 
     existed_games = Game.objects.filter(game_date=current_datetime.strftime("%Y-%m-%d"))
     pitcher_updated = True
     for ex in existed_games:
-        if ex.away_pitcher_id.id == -1 or ex.home_pitcher_id.id == -1:
+        if ex.away_pitcher_id.id == -1 or ex.home_pitcher_id.id == -1: # if there is a TBD pitcher, we need to update the game data
             pitcher_updated = False
             break
     if pitcher_updated: # we don't need to update the game data
